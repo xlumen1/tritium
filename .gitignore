@@ -1,0 +1,11 @@
+build/
+.vscode/
+
+# Windows
+*.exe
+*.dll
+*.lib
+
+# Linux
+*.a
+*.so
