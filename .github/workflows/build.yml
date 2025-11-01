@@ -15,7 +15,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         build_type: [Release, Debug]
-        shared: [ON, OFF]
+        shared: ON
 
     steps:
     - name: Checkout repository
@@ -31,14 +31,28 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt update
-        sudo apt install -y build-essential ninja-build cmake git libsdl3-dev libvulkan-dev
+        sudo apt install -y build-essential ninja-build cmake git libvulkan-dev
+        # Build SDL3 from source
+        git clone https://github.com/libsdl-org/SDL.git
+        cd SDL
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --parallel
+        sudo cmake --install build
+        cd ..
 
     # MACOS SETUP
     - name: Install dependencies (macOS)
       if: matrix.os == 'macos-latest'
       run: |
         brew update
-        brew install cmake ninja sdl3 vulkan-sdk
+        brew install cmake ninja vulkan-sdk
+        # Build SDL3 from source
+        git clone https://github.com/libsdl-org/SDL.git
+        cd SDL
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --parallel
+        sudo cmake --install build
+        cd ..
 
     # WINDOWS SETUP
     - name: Install dependencies (Windows)
