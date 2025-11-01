@@ -19,6 +19,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 find_package(Vulkan REQUIRED)
 find_package(SDL3 REQUIRED CONFIG)
 
+get_filename_component(SDL3_ROOT "${SDL3_DIR}" DIRECTORY)
+set(SDL3_DLL "${SDL3_ROOT}/bin/SDL3.dll" CACHE FILEPATH "Path to SDL3 runtime DLL")
+
 set(TRITIUM_DEPS Vulkan::Vulkan SDL3::SDL3 CACHE INTERNAL "Tritium dependencies")
 
 # Compiler Flags

@@ -2,11 +2,13 @@ project(TritiumEngine LANGUAGES CXX)
 
 set(ENGINE_SOURCES
     src/Engine.cpp
+    src/Window.cpp
 )
 
 set(ENGINE_HEADERS
     include/tritium/api.hpp
     include/tritium/Engine.hpp
+    include/tritium/Window.hpp
 )
 
 if(TRITIUM_BUILD_SHARED)
@@ -31,3 +33,14 @@ set_target_properties(tritium PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}"
 )
+
+if(WIN32)
+    if(EXISTS "${SDL3_DLL}")
+        add_custom_command(TARGET tritium POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL3_DLL}" "$<TARGET_FILE_DIR:tritium>"
+            COMMENT "Copying SDL3.dll to output directory"
+        )
+    else()
+        message(STATUS "SDL3.dll not found at ${SDL3_DLL}; runtime copy skipped")
+    endif()
+endif()
