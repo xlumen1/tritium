@@ -1,0 +1,53 @@
+name: Build Tritium Engine
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Release, Debug]
+        shared: [ON, OFF]  # shared = DLL/so, OFF = static
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up CMake
+      uses: lukka/get-cmake@v4
+      with:
+        cmake-version: '3.26.0'
+
+    - name: Install dependencies (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential ninja-build git cmake libvulkan-dev libsdl3-dev
+
+    - name: Install dependencies (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew update
+        brew install cmake ninja sdl3 vulkan-sdk
+
+    - name: Configure CMake
+      run: cmake -S . -B build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DTRITIUM_BUILD_SHARED=${{ matrix.shared }} \
+          -G "Ninja"
+
+    - name: Build All
+      run: cmake --build build --config ${{ matrix.build_type }}
+
+    - name: Run Runtime Test
+      run: |
+        echo "Running Runtime executable"
+        build/bin/TritiumRuntime || true
