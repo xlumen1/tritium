@@ -1,5 +1,4 @@
 name: Build Tritium Engine
-
 on:
   push:
     branches: [ main ]
@@ -8,46 +7,87 @@ on:
 
 jobs:
   build:
+    name: ${{ matrix.os }} - ${{ matrix.build_type }} - Shared=${{ matrix.shared }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         build_type: [Release, Debug]
-        shared: [ON, OFF]  # shared = DLL/so, OFF = static
-
-    runs-on: ${{ matrix.os }}
+        shared: [ON, OFF]
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up CMake
       uses: lukka/get-cmake@v4
       with:
-        cmake-version: '3.26.0'
+        cmake-version: "3.28.0"
 
+    # LINUX SETUP
     - name: Install dependencies (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt update
-        sudo apt install -y build-essential ninja-build git cmake libvulkan-dev libsdl3-dev
+        sudo apt install -y build-essential ninja-build cmake git libsdl3-dev libvulkan-dev
 
+    # MACOS SETUP
     - name: Install dependencies (macOS)
       if: matrix.os == 'macos-latest'
       run: |
         brew update
         brew install cmake ninja sdl3 vulkan-sdk
 
-    - name: Configure CMake
-      run: cmake -S . -B build \
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-          -DTRITIUM_BUILD_SHARED=${{ matrix.shared }} \
-          -G "Ninja"
+    # WINDOWS SETUP
+    - name: Install dependencies (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        # Install vcpkg if not cached
+        if (!(Test-Path "C:/vcpkg")) {
+          git clone https://github.com/microsoft/vcpkg.git C:/vcpkg
+          & C:/vcpkg/bootstrap-vcpkg.bat
+        }
 
-    - name: Build All
+        # Install dependencies
+        C:/vcpkg/vcpkg install sdl3:x64-windows
+        C:/vcpkg/vcpkg install vulkan:x64-windows
+
+        # Add vcpkg toolchain to environment
+        echo "VCPKG_ROOT=C:/vcpkg" | Out-File -Append -FilePath $env:GITHUB_ENV
+        echo "CMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake" | Out-File -Append -FilePath $env:GITHUB_ENV
+
+    # CONFIGURE & BUILD
+    - name: Configure CMake
+      run: >
+        cmake -S . -B build
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DTRITIUM_BUILD_SHARED=${{ matrix.shared }}
+        ${{ matrix.os == 'windows-latest' && format('-DCMAKE_TOOLCHAIN_FILE={0}', env.CMAKE_TOOLCHAIN_FILE) || '' }}
+        -G "${{ matrix.os == 'windows-latest' && 'Visual Studio 17 2022' || 'Ninja' }}"
+
+    - name: Build all targets
       run: cmake --build build --config ${{ matrix.build_type }}
 
-    - name: Run Runtime Test
+    # TEST EXECUTABLES
+    - name: Run runtime test (if exists)
       run: |
-        echo "Running Runtime executable"
-        build/bin/TritiumRuntime || true
+        if [ -f build/bin/TritiumRuntime${{ runner.os == 'Windows' && '.exe' || '' }} ]; then
+          echo "Running runtime executable..."
+          build/bin/TritiumRuntime${{ runner.os == 'Windows' && '.exe' || '' }} || true
+        else
+          echo "No runtime executable found."
+        fi
+      shell: bash
+
+    # ARTIFACT UPLOAD
+    - name: Upload build artifacts
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Tritium-${{ matrix.os }}-${{ matrix.build_type }}-Shared=${{ matrix.shared }}
+        path: |
+          build/bin/
+          build/lib/
