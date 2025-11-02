@@ -21,6 +21,7 @@ public:
     void mainLoop();
     void createLayer(Layer* layer, int priority);
     void killLayer(Uid uid);
+    std::vector<EngineLayerData> getLayers();
 private:
     Window window;
     std::vector<EngineLayerData> layers;

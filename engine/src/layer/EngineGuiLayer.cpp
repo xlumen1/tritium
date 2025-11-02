@@ -25,9 +25,15 @@ void EngineGuiLayer::process() {
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
-    // Sample Test Window
-    ImGui::Begin("Hello, World!");
-    ImGui::Text("Hello, World!");
+    // Layer Manager
+    ImGui::Begin("Layer Manager");
+    ImGui::Text("Loaded Layers:");
+    ImGui::BeginChild("Scrolling");
+    auto layers = t_engine.getLayers();
+    for (auto it = layers.begin(); it != layers.end(); it++) {
+        ImGui::Text("%06d: %s", it->priority, it->layer->uid.to_string().c_str());
+    }
+    ImGui::EndChild();
     ImGui::End();
 
     ImGui::Render();

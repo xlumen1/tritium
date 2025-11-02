@@ -28,13 +28,12 @@ include(FetchContent)
 
 FetchContent_Declare(
     imgui
-    GIT_REPOSITORY https://github.com/ocornut/imgui.git
-    GIT_TAG docking
-    GIT_SHALLOW TRUE
+    URL https://github.com/ocornut/imgui/archive/refs/heads/docking.zip
 )
-FetchContent_MakeAvailable(imgui)
-if(EXISTS "${imgui_SOURCE_DIR}/.git")
-    file(REMOVE_RECURSE "${imgui_SOURCE_DIR}/.git")
+
+FetchContent_GetProperties(imgui)
+if(NOT imgui_POPULATED)
+    FetchContent_Populate(imgui)
 endif()
 
 set(IMGUI_INCLUDE_DIRS
@@ -44,6 +43,7 @@ set(IMGUI_INCLUDE_DIRS
 )
 
 set(IMGUI_BACKENDS
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
     CACHE INTERNAL "Dear ImGui backend sources"

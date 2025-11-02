@@ -32,6 +32,10 @@ void Engine::killLayer(Uid uid) {
     }
 }
 
+std::vector<EngineLayerData> Engine::getLayers() {
+    return layers;
+}
+
 Window& Engine::getWindow() { return window; }
 
 void Engine::mainLoop() {
