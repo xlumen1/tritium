@@ -25,13 +25,23 @@ void EngineGuiLayer::process() {
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
+    if (ImGui::BeginMainMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Quit", "Alt+F4")) {
+                t_engine.shutdown();
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
+
     // Layer Manager
     ImGui::Begin("Layer Manager");
     ImGui::Text("Loaded Layers:");
     ImGui::BeginChild("Scrolling");
     auto layers = t_engine.getLayers();
     for (auto it = layers.begin(); it != layers.end(); it++) {
-        ImGui::Text("%06d: %s", it->priority, it->layer->uid.to_string().c_str());
+        ImGui::Text("%06d: %s (%s)", it->priority, it->layer->uid.to_string().c_str(), typeid(*(it->layer)).name());
     }
     ImGui::EndChild();
     ImGui::End();

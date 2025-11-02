@@ -4,32 +4,34 @@
 using namespace tritium;
 
 Engine::Engine(int width, int height) : window("Tritium Engine", width, height) {
-    std::cout << "[Tritium] Engine created.\n";
+    std::cout << "[Tritium] Engine created\n";
 }
 
 bool Engine::initialize() {
-    std::cout << "[Tritium] Engine initialized.\n";
+    std::cout << "[Tritium] Engine initialized\n";
     return true;
 }
 
 void Engine::shutdown() {
-    std::cout << "[Tritium] Engine shutdown.\n";
+    layers.clear();
+    std::cout << "[Tritium] Engine shutdown\n";
+    running = false;
 }
 
-void Engine::createLayer(Layer* layer, int priority) {
+Uid Engine::createLayer(std::shared_ptr<Layer> layer, int priority) {
     layers.push_back(EngineLayerData {
         layer,
         priority
     });
+    return layer.get()->uid;
 }
 
 void Engine::killLayer(Uid uid) {
-    for (auto it = layers.begin(); it != layers.end(); it++) {
-        if (it->layer->uid == uid) {
-            layers.erase(it);
-            break;
-        }
-    }
+    std::cout << "[Engine] Killing layer " << uid.to_string() << std::endl;
+    layers.erase(std::remove_if(layers.begin(), layers.end(),
+        [&](const EngineLayerData& data) {
+            return data.layer->uid == uid;
+        }), layers.end());
 }
 
 std::vector<EngineLayerData> Engine::getLayers() {
@@ -39,7 +41,7 @@ std::vector<EngineLayerData> Engine::getLayers() {
 Window& Engine::getWindow() { return window; }
 
 void Engine::mainLoop() {
-    bool running = true;
+    running = true;
     SDL_Event event;
 
     while (running) {
@@ -48,7 +50,8 @@ void Engine::mainLoop() {
                 it->layer->event(event);
             }
             if (event.type == SDL_EVENT_QUIT) {
-                running = false;
+                shutdown();
+                return;
             }
         }
 

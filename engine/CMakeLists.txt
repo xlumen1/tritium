@@ -4,6 +4,7 @@ set(ENGINE_SOURCES
     src/Engine.cpp
     src/Window.cpp
     src/layer/EngineGuiLayer.cpp
+    src/layer/RuntimeLayer.cpp
 )
 
 set(ENGINE_HEADERS
@@ -13,6 +14,7 @@ set(ENGINE_HEADERS
     include/tritium/uid.hpp
     include/tritium/layer/Layer.hpp
     include/tritium/layer/EngineGuiLayer.hpp
+    include/tritium/layer/RuntimeLayer.hpp
 )
 
 if(TRITIUM_BUILD_SHARED)

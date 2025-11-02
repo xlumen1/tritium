@@ -7,7 +7,7 @@
 namespace tritium {
 
 struct EngineLayerData {
-    Layer* layer;
+    std::shared_ptr<Layer> layer;
     int priority;
 };
 
@@ -19,10 +19,11 @@ public:
 
     Window& getWindow();
     void mainLoop();
-    void createLayer(Layer* layer, int priority);
+    Uid createLayer(std::shared_ptr<Layer> layer, int priority);
     void killLayer(Uid uid);
     std::vector<EngineLayerData> getLayers();
 private:
+    bool running;
     Window window;
     std::vector<EngineLayerData> layers;
 };

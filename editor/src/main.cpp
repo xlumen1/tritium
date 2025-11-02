@@ -11,15 +11,14 @@ int main() {
 
     std::cout << "[Editor] Welcome to Tritium Editor (stub)\n";
 
-    engine.createLayer(reinterpret_cast<tritium::Layer*>(new tritium::EngineGuiLayer(engine)), 16);
+    engine.createLayer(std::make_shared<tritium::EngineGuiLayer>(engine), 16);
 
     try {
         engine.mainLoop();
     } catch (const std::exception& e) {
         SDL_Log("Fatal error: %s", e.what());
+        engine.shutdown();
         return -1;
     }
-
-    engine.shutdown();
     return 0;
 }

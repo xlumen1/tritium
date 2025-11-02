@@ -1,4 +1,5 @@
 #include "tritium/Engine.hpp"
+#include "tritium/layer/RuntimeLayer.hpp"
 #include <iostream>
 
 int main() {
@@ -10,9 +11,15 @@ int main() {
 
     std::cout << "[Runtime] Running game loop (stub)...\n";
 
-    for (int i = 0; i < 3; ++i)
-        std::cout << "Tick " << i << "\n";
+    engine.createLayer(std::make_shared<tritium::RuntimeLayer>(engine), 0);
 
-    engine.shutdown();
+    try {
+        engine.mainLoop();
+    } catch (const std::exception& e) {
+        SDL_Log("Fatal error: %s", e.what());
+        engine.shutdown();
+        return -1;
+    }
+
     return 0;
 }
