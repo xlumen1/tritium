@@ -16,14 +16,33 @@ void Engine::shutdown() {
     std::cout << "[Tritium] Engine shutdown.\n";
 }
 
-Window& Engine::GetWindow() { return window; }
+void Engine::createLayer(Layer* layer, int priority) {
+    layers.push_back(EngineLayerData {
+        layer,
+        priority
+    });
+}
 
-void Engine::MainLoop() {
+void Engine::killLayer(Uid uid) {
+    for (auto it = layers.begin(); it != layers.end(); it++) {
+        if (it->layer->uid == uid) {
+            layers.erase(it);
+            break;
+        }
+    }
+}
+
+Window& Engine::getWindow() { return window; }
+
+void Engine::mainLoop() {
     bool running = true;
     SDL_Event event;
 
     while (running) {
         while (SDL_PollEvent(&event)) {
+            for (auto it = layers.begin(); it != layers.end(); it++) {
+                it->layer->event();
+            }
             if (event.type == SDL_EVENT_QUIT) {
                 running = false;
             }

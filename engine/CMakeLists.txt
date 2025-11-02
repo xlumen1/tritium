@@ -3,12 +3,16 @@ project(TritiumEngine LANGUAGES CXX)
 set(ENGINE_SOURCES
     src/Engine.cpp
     src/Window.cpp
+    src/layer/EngineGuiLayer.cpp
 )
 
 set(ENGINE_HEADERS
     include/tritium/api.hpp
     include/tritium/Engine.hpp
     include/tritium/Window.hpp
+    include/tritium/uid.hpp
+    include/tritium/layer/Layer.hpp
+    include/tritium/layer/EngineGuiLayer.hpp
 )
 
 if(TRITIUM_BUILD_SHARED)
@@ -20,6 +24,9 @@ endif()
 
 target_include_directories(tritium PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(tritium PUBLIC ${TRITIUM_DEPS})
+
+target_sources(tritium PRIVATE ${IMGUI_BACKENDS} ${IMGUI_SOURCES})
+target_include_directories(tritium PRIVATE ${IMGUI_INCLUDE_DIRS})
 
 if(WIN32)
     target_compile_definitions(tritium PUBLIC TRITIUM_PLATFORM_WINDOWS)

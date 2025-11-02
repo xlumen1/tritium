@@ -70,6 +70,7 @@ jobs:
         }
 
         # Install dependencies
+        C:/vcpkg/vcpkg install imgui:x64-windows
         C:/vcpkg/vcpkg install sdl3:x64-windows
         C:/vcpkg/vcpkg install vulkan:x64-windows
 

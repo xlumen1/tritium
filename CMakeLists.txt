@@ -24,6 +24,37 @@ set(SDL3_DLL "${SDL3_ROOT}/bin/SDL3.dll" CACHE FILEPATH "Path to SDL3 runtime DL
 
 set(TRITIUM_DEPS Vulkan::Vulkan SDL3::SDL3 CACHE INTERNAL "Tritium dependencies")
 
+include(FetchContent)
+
+FetchContent_Declare(
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG docking
+)
+
+FetchContent_MakeAvailable(imgui)
+
+set(IMGUI_INCLUDE_DIRS
+    ${imgui_SOURCE_DIR}
+    ${imgui_SOURCE_DIR}/backends
+    CACHE INTERNAL "Dear ImGui include directories"
+)
+
+set(IMGUI_BACKENDS
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+    CACHE INTERNAL "Dear ImGui backend sources"
+)
+
+# Core ImGui sources (these define ImGui::GetIO, GetCurrentContext, etc.)
+set(IMGUI_SOURCES
+    ${imgui_SOURCE_DIR}/imgui.cpp
+    ${imgui_SOURCE_DIR}/imgui_draw.cpp
+    ${imgui_SOURCE_DIR}/imgui_tables.cpp
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    CACHE INTERNAL "Dear ImGui core sources"
+)
+
 # Compiler Flags
 if(MSVC)
     add_compile_options(/W4 /permissive-)
