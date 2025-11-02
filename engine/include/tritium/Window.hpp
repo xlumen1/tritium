@@ -12,10 +12,12 @@ public:
     Window(const std::string& title, int width, int height);
     ~Window();
 
-    SDL_Window* GetSDLWindow() const;
+    SDL_Window* getSDLWindow() const;
+    SDL_Renderer* getSDLRenderer() const;
 
 private:
     SDL_Window* t_window = nullptr;
+    SDL_Renderer* t_renderer = nullptr;
 };
 
 } // namespace tritium

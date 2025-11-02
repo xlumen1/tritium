@@ -30,9 +30,12 @@ FetchContent_Declare(
     imgui
     GIT_REPOSITORY https://github.com/ocornut/imgui.git
     GIT_TAG docking
+    GIT_SHALLOW TRUE
 )
-
 FetchContent_MakeAvailable(imgui)
+if(EXISTS "${imgui_SOURCE_DIR}/.git")
+    file(REMOVE_RECURSE "${imgui_SOURCE_DIR}/.git")
+endif()
 
 set(IMGUI_INCLUDE_DIRS
     ${imgui_SOURCE_DIR}
@@ -46,13 +49,14 @@ set(IMGUI_BACKENDS
     CACHE INTERNAL "Dear ImGui backend sources"
 )
 
-# Core ImGui sources (these define ImGui::GetIO, GetCurrentContext, etc.)
 set(IMGUI_SOURCES
     ${imgui_SOURCE_DIR}/imgui.cpp
     ${imgui_SOURCE_DIR}/imgui_draw.cpp
     ${imgui_SOURCE_DIR}/imgui_tables.cpp
     ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-    CACHE INTERNAL "Dear ImGui core sources"
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
+    CACHE INTERNAL "Dear ImGui core + backend sources"
 )
 
 # Compiler Flags

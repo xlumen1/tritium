@@ -22,6 +22,15 @@ Window::Window(const std::string& title, int width, int height) {
     }
 
     std::cout << "[Window] Window created successfully!" << std::endl;
+
+    t_renderer = SDL_CreateRenderer(t_window, nullptr);
+
+    if (!t_renderer) {
+        const char* err = SDL_GetError();
+        std::cerr << "[Window] SDL_CreateRenderer failed: " << (err ? err : "Unknown error") << std::endl;
+        SDL_Quit();
+        throw std::runtime_error("SDL_CreateRenderer failed");
+    }
 }
 
 Window::~Window() {
@@ -34,6 +43,10 @@ Window::~Window() {
     std::cout << "[Window] Cleanup complete" << std::endl;
 }
 
-SDL_Window* Window::GetSDLWindow() const {
+SDL_Window* Window::getSDLWindow() const {
     return t_window;
+}
+
+SDL_Renderer* Window::getSDLRenderer() const {
+    return t_renderer;
 }

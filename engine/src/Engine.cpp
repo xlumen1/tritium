@@ -41,14 +41,22 @@ void Engine::mainLoop() {
     while (running) {
         while (SDL_PollEvent(&event)) {
             for (auto it = layers.begin(); it != layers.end(); it++) {
-                it->layer->event();
+                it->layer->event(event);
             }
             if (event.type == SDL_EVENT_QUIT) {
                 running = false;
             }
         }
 
-        // TODO: Frame Rendering
+        SDL_SetRenderDrawColorFloat(window.getSDLRenderer(), 0.0, 0.0, 0.0, 1.0);
+        SDL_RenderClear(window.getSDLRenderer());
+
+        for (auto it = layers.begin(); it != layers.end(); it++) {
+            it->layer->process();
+        }
+
+        SDL_RenderPresent(window.getSDLRenderer());
+
         SDL_Delay(16); // TODO: Adaptive Framerate
     }
 }

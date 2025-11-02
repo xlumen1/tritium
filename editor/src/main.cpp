@@ -11,7 +11,7 @@ int main() {
 
     std::cout << "[Editor] Welcome to Tritium Editor (stub)\n";
 
-    engine.createLayer(reinterpret_cast<tritium::Layer*>(new tritium::EngineGuiLayer(&engine)), 16);
+    engine.createLayer(reinterpret_cast<tritium::Layer*>(new tritium::EngineGuiLayer(engine)), 16);
 
     try {
         engine.mainLoop();

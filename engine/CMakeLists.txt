@@ -25,8 +25,15 @@ endif()
 target_include_directories(tritium PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(tritium PUBLIC ${TRITIUM_DEPS})
 
-target_sources(tritium PRIVATE ${IMGUI_BACKENDS} ${IMGUI_SOURCES})
-target_include_directories(tritium PRIVATE ${IMGUI_INCLUDE_DIRS})
+if (DEFINED imgui_SOURCE_DIR AND EXISTS "${imgui_SOURCE_DIR}/imgui.h")
+    set(IMGUI_INCLUDE_DIRS
+        ${imgui_SOURCE_DIR}
+        ${imgui_SOURCE_DIR}/backends
+    )
+endif()
+
+target_sources(tritium PUBLIC ${IMGUI_BACKENDS} ${IMGUI_SOURCES})
+target_include_directories(tritium PUBLIC ${IMGUI_INCLUDE_DIRS})
 
 if(WIN32)
     target_compile_definitions(tritium PUBLIC TRITIUM_PLATFORM_WINDOWS)
