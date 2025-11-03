@@ -9,3 +9,4 @@ build/
 # Linux
 *.a
 *.so
+*.ini

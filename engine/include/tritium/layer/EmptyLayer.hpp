@@ -6,8 +6,9 @@ namespace tritium {
 class TRITIUM_API EmptyLayer : public Layer {
     public:
         EmptyLayer(Engine& engine) : Layer(engine) {};
-        void process() {};
-        void event(SDL_Event event) {};
+        void process() override {};
+        void event(SDL_Event event) override {};
+		void message(LayerMessage message) override {};
         std::string layerName() const override {
             return "EmptyLayer";
         };

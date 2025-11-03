@@ -28,10 +28,17 @@ Uid Engine::createLayer(std::shared_ptr<Layer> layer, int priority) {
 
 void Engine::killLayer(Uid uid) {
     std::cout << "[Engine] Killing layer " << uid.to_string() << std::endl;
-    layers.erase(std::remove_if(layers.begin(), layers.end(),
-        [&](const EngineLayerData& data) {
-            return data.layer->uid == uid;
-        }), layers.end());
+    dyingLayers.push_back(uid);
+}
+
+void Engine::cleanLayers() {
+	for (auto uid : dyingLayers) {
+		layers.erase(std::remove_if(layers.begin(), layers.end(),
+				[&](const EngineLayerData& data) {
+					return data.layer->uid == uid;
+				}), layers.end());
+	}
+	dyingLayers.clear();
 }
 
 std::vector<EngineLayerData> Engine::getLayers() {
@@ -63,7 +70,8 @@ void Engine::mainLoop() {
         }
 
         SDL_RenderPresent(window.getSDLRenderer());
-
+		
+		cleanLayers();
         SDL_Delay(16); // TODO: Adaptive Framerate
     }
 }

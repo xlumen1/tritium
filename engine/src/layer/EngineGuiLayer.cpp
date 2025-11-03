@@ -20,6 +20,13 @@ EngineGuiLayer::EngineGuiLayer(Engine& engine) : Layer(engine) {
     ImGui_ImplSDLRenderer3_Init(t_engine.getWindow().getSDLRenderer());
 }
 
+EngineGuiLayer::~EngineGuiLayer() {
+	ImGui_ImplSDLRenderer3_Shutdown();
+	ImGui_ImplSDL3_Shutdown();
+	
+	ImGui::DestroyContext();
+}
+
 void EngineGuiLayer::process() {
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
@@ -42,6 +49,7 @@ void EngineGuiLayer::process() {
     auto layers = t_engine.getLayers();
     for (auto it = layers.begin(); it != layers.end(); it++) {
         ImGui::Text("%06d: %s (%s)", it->priority, it->layer->uid.to_string().c_str(), it->layer->layerName().c_str());
+		ImGui::SameLine();
         if (ImGui::Button(("Kill Layer##" + it->layer->uid.to_string()).c_str())) {
             t_engine.killLayer(it->layer->uid);
         }
@@ -56,4 +64,8 @@ void EngineGuiLayer::process() {
 
 void EngineGuiLayer::event(SDL_Event event) {
     ImGui_ImplSDL3_ProcessEvent(&event);
+}
+
+void EngineGuiLayer::message(LayerMessage message) {
+	
 }
