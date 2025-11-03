@@ -3,6 +3,7 @@
 #include "Window.hpp"
 #include "layer/Layer.hpp"
 #include <vector>
+#include <memory>
 
 namespace tritium {
 
