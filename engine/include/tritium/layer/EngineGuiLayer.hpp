@@ -11,5 +11,8 @@ class TRITIUM_API EngineGuiLayer : public Layer {
         EngineGuiLayer(Engine& engine);
         void process() override;
         void event(SDL_Event event) override;
+        std::string layerName() const override {
+            return "EngineGuiLayer";
+        };
 };
 } // namespace tritium

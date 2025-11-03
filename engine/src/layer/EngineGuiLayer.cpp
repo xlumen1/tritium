@@ -41,7 +41,10 @@ void EngineGuiLayer::process() {
     ImGui::BeginChild("Scrolling");
     auto layers = t_engine.getLayers();
     for (auto it = layers.begin(); it != layers.end(); it++) {
-        ImGui::Text("%06d: %s (%s)", it->priority, it->layer->uid.to_string().c_str(), typeid(*(it->layer)).name());
+        ImGui::Text("%06d: %s (%s)", it->priority, it->layer->uid.to_string().c_str(), it->layer->layerName().c_str());
+        if (ImGui::Button(("Kill Layer##" + it->layer->uid.to_string()).c_str())) {
+            t_engine.killLayer(it->layer->uid);
+        }
     }
     ImGui::EndChild();
     ImGui::End();

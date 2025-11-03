@@ -18,6 +18,7 @@ public:
     };
     virtual void process() = 0;
     virtual void event(SDL_Event event) = 0;
+    virtual std::string layerName() const = 0;
 
     Uid uid;
 protected:

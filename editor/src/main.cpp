@@ -1,5 +1,6 @@
 #include "tritium/Engine.hpp"
 #include "tritium/layer/EngineGuiLayer.hpp"
+#include "tritium/layer/EmptyLayer.hpp"
 #include <iostream>
 
 int main() {
@@ -11,7 +12,8 @@ int main() {
 
     std::cout << "[Editor] Welcome to Tritium Editor (stub)\n";
 
-    engine.createLayer(std::make_shared<tritium::EngineGuiLayer>(engine), 16);
+    engine.createLayer(std::make_shared<tritium::EngineGuiLayer>(engine), 16); // postware
+    engine.createLayer(std::make_shared<tritium::EmptyLayer>(engine), -1); // preware
 
     try {
         engine.mainLoop();

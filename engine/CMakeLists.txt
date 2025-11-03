@@ -15,6 +15,7 @@ set(ENGINE_HEADERS
     include/tritium/layer/Layer.hpp
     include/tritium/layer/EngineGuiLayer.hpp
     include/tritium/layer/RuntimeLayer.hpp
+    include/tritium/layer/EmptyLayer.hpp
 )
 
 if(TRITIUM_BUILD_SHARED)
