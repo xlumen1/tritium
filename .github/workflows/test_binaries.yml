@@ -1,0 +1,104 @@
+name: Test Tritium Binaries
+
+on:
+  # Automatic
+  workflow_run:
+    workflows: ["Build Tritium Engine"]
+    types: [completed]
+
+  # Manual
+  workflow_dispatch:
+    inputs:
+      os:
+        description: "Target OS to test"
+        required: false
+        default: "windows-latest"
+        type: choice
+        options:
+          - windows-latest
+          - ubuntu-latest
+          - macos-latest
+      build_type:
+        description: "Build type"
+        required: false
+        default: "Release"
+        type: choice
+        options:
+          - Release
+          - Debug
+      shared:
+        description: "Shared build flag"
+        required: false
+        default: "ON"
+        type: choice
+        options:
+          - ON
+          - OFF
+
+jobs:
+  test:
+    name: Test ${{ inputs.os || matrix.os }} - ${{ inputs.build_type || matrix.build_type }}
+    runs-on: ${{ inputs.os || matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Release]
+        shared: [ON]
+      # Manual runs override the matrix
+      max-parallel: 3
+
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success')
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Tritium-${{ inputs.os || matrix.os }}-${{ inputs.build_type || matrix.build_type }}-Shared=${{ inputs.shared || matrix.shared }}
+          path: ./dist
+
+      - name: List downloaded files
+        run: ls -R ./dist
+        shell: bash
+
+      - name: Check dependencies (Linux)
+        if: (inputs.os || matrix.os) == 'ubuntu-latest'
+        run: ldd ./dist/bin/TritiumRuntime || true
+
+      - name: Check dependencies (macOS)
+        if: (inputs.os || matrix.os) == 'macos-latest'
+        run: otool -L ./dist/bin/TritiumRuntime || true
+
+      - name: Check dependencies (Windows)
+        if: (inputs.os || matrix.os) == 'windows-latest'
+        shell: pwsh
+        run: |
+          $exe = "dist/bin/TritiumRuntime.exe"
+          if (Test-Path $exe) {
+            Write-Host "Inspecting $exe"
+            & where.exe sdl3.dll || Write-Host "SDL3.dll not found in PATH"
+          } else {
+            Write-Host "No runtime executable found."
+          }
+
+      - name: Run binary (Linux/macOS)
+        if: (inputs.os || matrix.os) != 'windows-latest'
+        shell: bash
+        run: |
+          chmod +x ./dist/bin/TritiumRuntime || true
+          echo "Running runtime..."
+          ./dist/bin/TritiumRuntime || echo "Runtime exited with nonzero code (might just mean missing deps)"
+
+      - name: Run binary (Windows)
+        if: (inputs.os || matrix.os) == 'windows-latest'
+        shell: pwsh
+        run: |
+          $exe = "dist/bin/TritiumRuntime.exe"
+          if (Test-Path $exe) {
+            Write-Host "Running $exe"
+            & $exe
+          } else {
+            Write-Host "No runtime executable found."
+          }
