@@ -35,7 +35,7 @@ void EngineGuiLayer::process() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("Quit", "Alt+F4")) {
-                t_engine.shutdown();
+                t_engine.scheduleKill();
             }
             ImGui::EndMenu();
         }

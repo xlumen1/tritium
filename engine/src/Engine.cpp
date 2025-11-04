@@ -15,6 +15,9 @@ bool Engine::initialize() {
 void Engine::shutdown() {
     layers.clear();
     std::cout << "[Tritium] Engine shutdown\n";
+}
+
+void Engine::scheduleKill() {
     running = false;
 }
 
@@ -57,8 +60,7 @@ void Engine::mainLoop() {
                 it->layer->event(event);
             }
             if (event.type == SDL_EVENT_QUIT) {
-                shutdown();
-                return;
+                scheduleKill();
             }
         }
 
@@ -70,8 +72,9 @@ void Engine::mainLoop() {
         }
 
         SDL_RenderPresent(window.getSDLRenderer());
-		
+
 		cleanLayers();
         SDL_Delay(16); // TODO: Adaptive Framerate
     }
+    shutdown();
 }

@@ -5,6 +5,7 @@ set(ENGINE_SOURCES
     src/Window.cpp
     src/layer/EngineGuiLayer.cpp
     src/layer/RuntimeLayer.cpp
+    src/layer/EmptyLayer.cpp
 )
 
 set(ENGINE_HEADERS
