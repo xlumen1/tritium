@@ -26,14 +26,6 @@ on:
         options:
           - Release
           - Debug
-      shared:
-        description: "Shared build flag"
-        required: false
-        default: "ON"
-        type: choice
-        options:
-          - ON
-          - OFF
 
 jobs:
   test:
@@ -45,7 +37,6 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         build_type: [Release]
         shared: [ON]
-      # Manual runs override the matrix
       max-parallel: 3
 
     if: >
@@ -56,7 +47,7 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: Tritium-${{ inputs.os || matrix.os }}-${{ inputs.build_type || matrix.build_type }}-Shared=${{ inputs.shared || matrix.shared }}
+          name: Tritium-${{ inputs.os || matrix.os }}-${{ inputs.build_type || matrix.build_type }}-Shared=ON
           path: ./dist
 
       - name: List downloaded files
