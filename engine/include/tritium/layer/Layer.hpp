@@ -2,10 +2,17 @@
 #include "../api.hpp"
 #include "../uid.hpp"
 #include <iostream>
+#include <any>
 #include <SDL3/SDL.h>
 
 namespace tritium {
 class Engine; // Prevents circular dep
+
+struct LayerMessage {
+    Uid sender;
+    std::string type;
+    std::any payload;
+};
 
 class TRITIUM_API Layer {
 public:
@@ -18,6 +25,8 @@ public:
     };
     virtual void process() = 0;
     virtual void event(SDL_Event event) = 0;
+	virtual void message(LayerMessage message) = 0;
+    virtual std::string layerName() const = 0;
 
     Uid uid;
 protected:

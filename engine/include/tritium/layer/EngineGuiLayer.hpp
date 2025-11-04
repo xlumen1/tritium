@@ -9,7 +9,12 @@ namespace tritium {
 class TRITIUM_API EngineGuiLayer : public Layer {
     public:
         EngineGuiLayer(Engine& engine);
+		~EngineGuiLayer();
         void process() override;
         void event(SDL_Event event) override;
+		void message(LayerMessage message) override;
+        std::string layerName() const override {
+            return "EngineGuiLayer";
+        };
 };
 } // namespace tritium
