@@ -9,7 +9,7 @@ class TRITIUM_API EmptyLayer : public Layer {
         ~EmptyLayer();
         void process() override {};
         void event(SDL_Event event) override {};
-		void message(LayerMessage message) override {};
+		void message(LayerMessage message);
         std::string layerName() const override {
             return "EmptyLayer";
         };

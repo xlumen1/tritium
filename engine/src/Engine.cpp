@@ -44,6 +44,24 @@ void Engine::cleanLayers() {
 	dyingLayers.clear();
 }
 
+void Engine::sendMessageToLayer(Uid uid, LayerMessage message) {
+    for (auto it = layers.begin(); it != layers.end(); it++) {
+        if (it->layer->uid == uid) {
+            it->layer->message(message);
+            return;
+        }
+    }
+}
+
+Uid Engine::getLayerByName(const std::string& name) {
+    for (auto it = layers.begin(); it != layers.end(); it++) {
+        if (it->layer->layerName() == name) {
+            return it->layer->uid;
+        }
+    }
+    return Uid(); // Return invalid Uid if not found
+}
+
 std::vector<EngineLayerData> Engine::getLayers() {
     return layers;
 }
@@ -57,7 +75,8 @@ void Engine::mainLoop() {
     while (running) {
         while (SDL_PollEvent(&event)) {
             for (auto it = layers.begin(); it != layers.end(); it++) {
-                it->layer->event(event);
+                if (it->layer->active)
+                    it->layer->event(event);
             }
             if (event.type == SDL_EVENT_QUIT) {
                 scheduleKill();
@@ -68,7 +87,8 @@ void Engine::mainLoop() {
         SDL_RenderClear(window.getSDLRenderer());
 
         for (auto it = layers.begin(); it != layers.end(); it++) {
-            it->layer->process();
+            if (it->layer->active)
+                it->layer->process();
         }
 
         SDL_RenderPresent(window.getSDLRenderer());

@@ -1,6 +1,7 @@
 #pragma once
 #include "../api.hpp"
 #include "../uid.hpp"
+#include "../MessageType.hpp"
 #include <iostream>
 #include <any>
 #include <SDL3/SDL.h>
@@ -10,7 +11,7 @@ class Engine; // Prevents circular dep
 
 struct LayerMessage {
     Uid sender;
-    std::string type;
+    MessageType type;
     std::any payload;
 };
 
@@ -29,6 +30,7 @@ public:
     virtual std::string layerName() const = 0;
 
     Uid uid;
+    bool active{true};
 protected:
     Engine& t_engine;
 };

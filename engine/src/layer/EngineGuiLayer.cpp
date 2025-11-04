@@ -53,6 +53,16 @@ void EngineGuiLayer::process() {
         if (ImGui::Button(("Kill Layer##" + it->layer->uid.to_string()).c_str())) {
             t_engine.killLayer(it->layer->uid);
         }
+        ImGui::SameLine();
+        if (ImGui::Button(((it->layer->active ? "Sleep##" : "Wake##") + it->layer->uid.to_string()).c_str())) {
+            LayerMessage message;
+            message.sender = this->uid;
+            message.type = it->layer->active ? MessageType::SLEEP : MessageType::WAKE;
+            t_engine.sendMessageToLayer(it->layer->uid, message);
+        }
+        if (it != layers.end() - 1) {
+            ImGui::Separator();
+        }
     }
     ImGui::EndChild();
     ImGui::End();
@@ -67,5 +77,13 @@ void EngineGuiLayer::event(SDL_Event event) {
 }
 
 void EngineGuiLayer::message(LayerMessage message) {
-	
+    if (message.type == MessageType::SLEEP) {
+        if (active) {
+            std::cout << "[EngineGuiLayer] Going to sleep." << std::endl;
+            active = false;
+        }
+    }
+    if (message.type == MessageType::WAKE) {
+        active = true;
+    }
 }

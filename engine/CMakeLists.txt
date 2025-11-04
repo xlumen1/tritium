@@ -13,6 +13,7 @@ set(ENGINE_HEADERS
     include/tritium/Engine.hpp
     include/tritium/Window.hpp
     include/tritium/uid.hpp
+    include/tritium/MessageType.hpp
     include/tritium/layer/Layer.hpp
     include/tritium/layer/EngineGuiLayer.hpp
     include/tritium/layer/RuntimeLayer.hpp

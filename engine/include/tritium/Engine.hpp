@@ -26,6 +26,8 @@ public:
     void killLayer(Uid uid);
 	void cleanLayers();
     std::vector<EngineLayerData> getLayers();
+    void sendMessageToLayer(Uid uid, LayerMessage message);
+    Uid getLayerByName(const std::string& name);
 private:
     bool running;
     Window window;
