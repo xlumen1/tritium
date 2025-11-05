@@ -23,7 +23,7 @@ EngineGuiLayer::EngineGuiLayer(Engine& engine) : Layer(engine) {
 EngineGuiLayer::~EngineGuiLayer() {
 	ImGui_ImplSDLRenderer3_Shutdown();
 	ImGui_ImplSDL3_Shutdown();
-	
+
 	ImGui::DestroyContext();
 }
 
@@ -42,31 +42,6 @@ void EngineGuiLayer::process() {
         ImGui::EndMainMenuBar();
     }
 
-    // Layer Manager
-    ImGui::Begin("Layer Manager");
-    ImGui::Text("Loaded Layers:");
-    ImGui::BeginChild("Scrolling");
-    auto layers = t_engine.getLayers();
-    for (auto it = layers.begin(); it != layers.end(); it++) {
-        ImGui::Text("%06d: %s (%s)", it->priority, it->layer->uid.to_string().c_str(), it->layer->layerName().c_str());
-		ImGui::SameLine();
-        if (ImGui::Button(("Kill Layer##" + it->layer->uid.to_string()).c_str())) {
-            t_engine.killLayer(it->layer->uid);
-        }
-        ImGui::SameLine();
-        if (ImGui::Button(((it->layer->active ? "Sleep##" : "Wake##") + it->layer->uid.to_string()).c_str())) {
-            LayerMessage message;
-            message.sender = this->uid;
-            message.type = it->layer->active ? MessageType::SLEEP : MessageType::WAKE;
-            t_engine.sendMessageToLayer(it->layer->uid, message);
-        }
-        if (it != layers.end() - 1) {
-            ImGui::Separator();
-        }
-    }
-    ImGui::EndChild();
-    ImGui::End();
-
     // Callback windows
     for (auto it = renderModuleUids.begin(); it != renderModuleUids.end(); it++) {
         callbacks.at(*it)();
@@ -82,6 +57,7 @@ void EngineGuiLayer::event(SDL_Event event) {
 }
 
 void EngineGuiLayer::message(LayerMessage message) {
+    std::cout << "[EngineGuiLayer] Got message from " << message.sender.to_string() << " with header " << message.header << std::endl;
     if (message.type == MessageType::SLEEP) {
         if (active) {
             std::cout << "[EngineGuiLayer] Going to sleep." << std::endl;
@@ -104,9 +80,10 @@ void EngineGuiLayer::message(LayerMessage message) {
     if (message.type == MessageType::SEND_DATA) {
         if (message.header.compare("REGISTER_RENDER_MODULE") == 0) {
             try {
+                auto nfuid = Uid::generate();
                 auto func = std::any_cast<std::function<void()>>(message.payload);
-                callbacks[message.sender] = func;
-                renderModuleUids.push_back(message.sender);
+                callbacks[nfuid] = func;
+                renderModuleUids.push_back(nfuid);
                 std::cout << "[EngineGuiLayer] Registered render module from layer " << message.sender.to_string() << std::endl;
             } catch (const std::bad_any_cast& e) {
                 std::cerr << "[EngineGuiLayer] Failed to register render module from layer " << message.sender.to_string() << ": " << e.what() << std::endl;

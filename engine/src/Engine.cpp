@@ -46,6 +46,7 @@ void Engine::cleanLayers() {
 
 void Engine::sendMessageToLayer(Uid uid, LayerMessage message) {
     for (auto it = layers.begin(); it != layers.end(); it++) {
+        std::cout << "[Engine] Checking layer " << it->layer->uid.to_string() << " against " << uid.to_string() << std::endl;
         if (it->layer->uid == uid) {
             it->layer->message(message);
             return;
