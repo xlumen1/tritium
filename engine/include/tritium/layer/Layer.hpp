@@ -9,9 +9,10 @@
 namespace tritium {
 class Engine; // Prevents circular dep
 
-struct LayerMessage {
+struct TRITIUM_API LayerMessage {
     Uid sender;
     MessageType type;
+    std::string header;
     std::any payload;
 };
 

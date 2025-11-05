@@ -67,6 +67,11 @@ void EngineGuiLayer::process() {
     ImGui::EndChild();
     ImGui::End();
 
+    // Callback windows
+    for (auto it = renderModuleUids.begin(); it != renderModuleUids.end(); it++) {
+        callbacks.at(*it)();
+    }
+
     ImGui::Render();
 
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), t_engine.getWindow().getSDLRenderer());
@@ -81,9 +86,32 @@ void EngineGuiLayer::message(LayerMessage message) {
         if (active) {
             std::cout << "[EngineGuiLayer] Going to sleep." << std::endl;
             active = false;
+            LayerMessage reply;
+            reply.sender = this->uid;
+            reply.type = MessageType::ACKNOWLEDGE;
+            reply.header = "SLEEP_ACK";
+            t_engine.sendMessageToLayer(message.sender, reply);
         }
     }
     if (message.type == MessageType::WAKE) {
         active = true;
+        LayerMessage reply;
+        reply.sender = this->uid;
+        reply.type = MessageType::ACKNOWLEDGE;
+        reply.header = "WAKE_ACK";
+        t_engine.sendMessageToLayer(message.sender, reply);
     }
+    if (message.type == MessageType::SEND_DATA) {
+        if (message.header.compare("REGISTER_RENDER_MODULE") == 0) {
+            try {
+                auto func = std::any_cast<std::function<void()>>(message.payload);
+                callbacks[message.sender] = func;
+                renderModuleUids.push_back(message.sender);
+                std::cout << "[EngineGuiLayer] Registered render module from layer " << message.sender.to_string() << std::endl;
+            } catch (const std::bad_any_cast& e) {
+                std::cerr << "[EngineGuiLayer] Failed to register render module from layer " << message.sender.to_string() << ": " << e.what() << std::endl;
+            }
+        }
+    }
+
 }

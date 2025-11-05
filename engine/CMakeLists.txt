@@ -6,6 +6,7 @@ set(ENGINE_SOURCES
     src/layer/EngineGuiLayer.cpp
     src/layer/RuntimeLayer.cpp
     src/layer/EmptyLayer.cpp
+    src/layer/EngineToolLayer.cpp
 )
 
 set(ENGINE_HEADERS
@@ -18,6 +19,7 @@ set(ENGINE_HEADERS
     include/tritium/layer/EngineGuiLayer.hpp
     include/tritium/layer/RuntimeLayer.hpp
     include/tritium/layer/EmptyLayer.hpp
+    include/tritium/layer/EngineToolLayer.hpp
 )
 
 if(TRITIUM_BUILD_SHARED)

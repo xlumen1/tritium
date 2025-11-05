@@ -1,6 +1,8 @@
 #include "tritium/Engine.hpp"
 #include "tritium/layer/EngineGuiLayer.hpp"
 #include "tritium/layer/EmptyLayer.hpp"
+#include "tritium/layer/EngineToolLayer.hpp"
+#include "tritium/layer/Layer.hpp"
 #include <iostream>
 
 int main() {
@@ -14,6 +16,7 @@ int main() {
 
     engine.createLayer(std::make_shared<tritium::EngineGuiLayer>(engine), 16); // postware
     engine.createLayer(std::make_shared<tritium::EmptyLayer>(engine), -1); // preware
+    engine.createLayer(std::make_shared<tritium::EngineToolLayer>(engine), 17);
 
     try {
         engine.mainLoop();

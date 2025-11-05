@@ -4,6 +4,8 @@
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
+#include <vector>
+#include <functional>
 
 namespace tritium {
 class TRITIUM_API EngineGuiLayer : public Layer {
@@ -16,5 +18,8 @@ class TRITIUM_API EngineGuiLayer : public Layer {
         std::string layerName() const override {
             return "EngineGuiLayer";
         };
+    private:
+        std::unordered_map<Uid, std::function<void()>> callbacks;
+        std::vector<Uid> renderModuleUids;
 };
 } // namespace tritium
