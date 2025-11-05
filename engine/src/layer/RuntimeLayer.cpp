@@ -7,7 +7,7 @@ using namespace tritium;
 RuntimeLayer::RuntimeLayer(Engine& engine) : Layer(engine) {}
 
 void RuntimeLayer::process() {
-    t_engine.shutdown();
+    t_engine.scheduleKill();
 }
 
 void RuntimeLayer::event(SDL_Event event) {}
